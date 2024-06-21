@@ -1,0 +1,460 @@
+<!DOCTYPE html>
+<html lang="zh">
+<head>
+    <meta charset="UTF-8">
+    <title>带下拉菜单的导航栏</title>
+    <style>
+        body {
+            margin: 0;
+            padding: 0;
+            background-image: url('images1/background.png');
+            background-size: cover;
+            background-attachment:;
+            background-position: center center;
+            background-repeat: no-repeat;
+            height: 100vh;
+            font-family: '微软雅黑', sans-serif;
+            background-position: center -20px;
+        }
+        header {
+            position: relative;
+            padding: 20px;
+            box-sizing: border-box;
+            text-align: left;
+        }
+        header h1, header p {
+            margin: 0;
+            padding: 0;
+            line-height: 1.2;
+            color: #000;
+        }
+        .logo-text-container {
+            position: absolute;
+            left: 15%;
+            top: 10%;
+            text-align: center;
+        }
+        .logo-image {
+            width: 200px;
+            height: auto;
+            display: inline-block;
+            vertical-align: middle;
+            margin-top: -38px;
+        }
+        .logo-text {
+            font-size: 65px;
+            color: #000;
+            font-weight: bold;
+            text-shadow: 2px 2px 4px rgba(0,0,0,0.5);
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 10px;
+            margin-top: -75px;
+        }
+        .college-name {
+            font-size: 40px;
+            color: #555;
+            font-weight: lighter;
+            display: inline-block;
+            vertical-align: middle;
+            margin-left: 20px;
+            margin-top: -50px;
+        }
+        /* 导航栏样式 */
+        nav {
+            width: 100%;
+            box-sizing: border-box;
+            overflow: hidden;
+            margin-top: 25px;
+            background: none;
+            position: relative;
+            margin-left: -70px; 
+        }
+        nav ul {
+            list-style-type: none;
+            padding: -20;
+            margin: 0;
+            display: flex;
+            justify-content: center;
+        }
+        nav ul li {
+            display: inline-block;
+            margin: 10px;
+        }
+        nav ul li a {
+            text-decoration: none;
+            color: #000;
+            font-weight: bold;
+            padding: 15px 35px;
+            font-size: 29px;
+        }
+        nav ul li:first-child a {
+            color: #FFF;
+        }
+        /* 定义小竖线的容器样式 */
+        .growing-lines {
+            display: flex;
+            justify-content: space-around;
+            width: 100%;
+            height: 7px;
+            position: absolute;
+            top: 100%;
+            left: 0;
+            margin-top: -26.5px;
+            /* 允许鼠标事件在竖线上触发 */
+            pointer-events: auto;
+        }
+
+        .line {
+            width: 3px;
+            background-color: #96d5ec;
+            /* 初始高度 */
+            height: 7px;
+            position: relative; /* 使绝对定位的伪元素能够相对于它定位 */
+        }
+
+        /* 添加伪元素用于增长动画 */
+        .line::before {
+            content: '';
+            position: absolute;
+            top: 100%;
+            left: 0;
+            width: 100%;
+            height: 0;
+            background-color: #96d5ec;
+            transition: height 0.3s ease;
+        }
+        .sidebar {
+            position: relative; /* Change from fixed to relative */
+            top: auto; /* 根据实际情况调整 */
+            left: -5px; /* 根据实际情况调整 */
+            width: 200px; /* 固定宽度 */
+            padding: 20px;
+            box-sizing: border-box;
+            overflow-y: auto;
+            background-color: transparent; /* Reset the background color */
+            font-size: 15px;
+            margin-top: -390px;
+        }
+        .sidebar h2 {
+            margin-bottom: 26px;
+        }
+        .sidebar ul {
+            list-style-type: none;
+            padding: 0;
+            margin: 0;
+        }
+        .sidebar li {
+            margin-bottom: 10px;
+        }
+        .sidebar .announcement, .sidebar .news-item {
+            margin-bottom: 20px;
+        }
+        .sidebar .announcement-title, .sidebar .news-title {
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        .sidebar .announcement-content, .sidebar .news-content {
+            margin-bottom: 5px;
+        }
+        .sidebar .announcement-date, .sidebar .news-date {
+            font-style: italic;
+            color: #666;
+        }
+        
+        /* 修正图片容器样式 */
+        .image-gallery {
+            display: flex;
+            justify-content: center;
+            flex-wrap: wrap;
+            gap:120px;
+            margin: 0 auto;
+            padding: 8;
+            margin-top: 50px;
+            overflow: hidden; /* 添加此属性 */
+            top: 100%;
+    /* 确保图片变化不会影响外部布局 */
+        }
+        .image-gallery img {
+            max-width: 100%; /* 图片最大宽度为容器宽度 */
+            max-height: 100%; /* 图片最大高度为容器高度 */
+            width: calc(30% - 220px);
+            height: auto;
+            transition: transform 0.3s ease;
+        }
+        .image-gallery img:hover {
+            transform: scale(1.05);
+        }
+
+        /* 图片整体靠右显示 */
+        .image-container {
+            text-align: right;
+            padding: 10px 0;
+        }
+         /* 添加三角形按钮样式 */
+         .arrow-button {
+            cursor: pointer;
+            display: inline-block;
+            width: 0;
+            height: 0;
+            border-top: 50px solid transparent; /* 上边框透明 */
+            border-bottom: 50px solid transparent; /* 下边框透明 */
+            border-top: 50px solid transparent;
+            border-right: 50px solid transparent;
+            border-left: 70px solid #7d8cf0; /* 青色 */
+            position: absolute;
+            background-color: transparent; /* 确保背景是透明的 */
+            right: 5%;
+            top: 50%;
+            transform: translateY(-50%);
+            margin-right: -35px; /* Adjust the position to align it to the right middle of the page */
+        }
+        /* 图片容器样式调整，为了使按钮位于图片右侧 */
+        .gallery-container {
+            position: relative;
+            width: 100%;
+            text-align: center;
+        }
+        /* 调整body的高度允许滚动 */
+body {
+    font-family: '微软雅黑', sans-serif;
+    /* 其他样式... */
+    min-height: 100vh; /* 允许内容超出视口 */
+    background-image: url('images1/background.png');
+    background-size: cover;
+    background-attachment: scroll; /* 允许背景滚动 */
+}
+
+/* 搜索框容器样式 */
+.search-form {
+    position: absolute; /* 绝对定位 */
+    top: 100%; /* 导航栏下方 */
+    right: 20px; /* 视口的右侧20像素位置 */
+    margin: 0; /* 移除外边距 */
+    width: auto; /* 自动宽度 */
+}
+
+/* 搜索框输入框样式 */
+.search-input {
+    padding: 5px 15px; /* 调整内边距 */
+    font-size: 16px; /* 根据需要调整字体大小 */
+    border: none; /* 无边框 */
+    border-bottom: 2px solid #ccc; /* 底部横线 */
+    border-radius: 4px 4px 0 0; /* 圆角，只在顶部 */
+    outline: none; /* 点击时无轮廓 */
+    background-color: #f0f0f0; /* 浅蓝色背景 */
+    transition: border-bottom 0.3s ease; /* 平滑过渡效果 */
+}
+
+/* 搜索框按钮样式 */
+.search-submit {
+    padding: 5px 10px; /* 调整按钮内边距 */
+    margin-left: 10px; /* 与输入框的距离 */
+    border: none; /* 无边框 */
+    border-radius: 0 4px 4px 0; /* 圆角，只在右侧和底部 */
+    background-color: #007bff; /* 按钮背景色 */
+    color: white; /* 文字颜色 */
+    cursor: pointer; /* 鼠标悬停时显示手形图标 */
+}
+
+/* 鼠标悬停时的效果 */
+.search-input:focus,
+.search-submit:hover {
+    border-bottom: 2px solid #007bff; /* 鼠标悬停时的横线颜色 */
+}
+.floating-image {
+    position: absolute; /* 绝对定位 */
+    bottom: 20px; /* 距离视口底部的距离 */
+    left: 50%; /* 从中间开始定位 */
+    transform: translateX(-50%); /* 水平居中 */
+    width: 350px; /* 图片宽度，根据需要调整 */
+    height: auto; /* 自动高度，保持图片比例 */
+    z-index: 1; /* 确保图片在其他内容上方 */
+}
+
+/* 为每张图片添加不同的定位 */
+.floating-image:nth-of-type(1) {
+    bottom: 0px; /* yun1.png 的距离 */
+    left: 25.5%; /* 从中间开始定位 */
+}
+
+.floating-image:nth-of-type(2) {
+    bottom: 80px; /* yun2.png 的距离 */
+}
+
+.floating-image:nth-of-type(3) {
+    bottom: 120px; /* yun3.png 的距离 */
+    left: 72%; /* 从中间开始定位 */
+}
+    </style>
+</head>
+<body>
+    <header>
+        <div class="logo-text-container">
+            <img src="images1/hengangggg.png" alt="Logo" class="logo-image">
+            <div class="logo-text">传播学</div>
+            <div class="college-name">人文艺术与数字媒体学院</div>
+        </div>
+        <div style="margin-left: 5px; margin-top: 1%;">
+            <h1>杭州电子科技大学</h1>
+            <p>HangZhou Dianzi University</p>
+        </div>
+        <form class="search-form">
+            <input type="text" class="search-input" placeholder="输入内容...">
+            <button type="submit" class="search-submit">🔍</button>
+        </form>
+        <!-- 导航栏 -->
+        <nav>
+            <ul>
+                <li><a href="#">首页</a></li><span class="separator"></span>
+                <li><a href="#">学系概览</a></li><span class="separator"></span>
+                <li><a href="#">招生信息</a></li><span class="separator"></span>
+                <li><a href="#">教学信息</a></li><span class="separator"></span>
+                <li><a href="#">学院近闻</a></li><span class="separator"></span>
+                <li><a href="#">学生作品</a></li><span class="separator"></span>
+                <li><a href="#">文件下载</a></li>
+            </ul>
+        </nav>
+        <div class="growing-lines"></div>
+    </header>
+    <div class="container">
+        <!-- The duplicate nav element is removed here -->
+    </div>
+
+    <!-- 图片容器 -->
+       <div class="gallery-container">
+        <div class="image-gallery">
+            <!-- 初始显示的图片 -->
+            <img src="images1/12.jpg" alt="Image 1" class="gallery-image">
+            <img src="images1/23.png" alt="Image 2" class="gallery-image">
+            <img src="images1/34.png" alt="Image 3" class="gallery-image">
+        </div>
+        <!-- 三角形按钮 -->
+        <button class="arrow-button" onclick="nextImageSet()"></button>
+    </div>
+ <!-- 添加的图片 -->
+ <img src="images1/yun1.png" alt="Cloud 1" class="floating-image">
+ <img src="images1/yun2.png" alt="Cloud 2" class="floating-image">
+ <img src="images1/yun3.png" alt="Cloud 3" class="floating-image">
+
+    <!-- 侧边栏 -->
+    <div class="sidebar">
+        <h2>学系公告</h2>
+        <ul>
+            <li>
+                <div class="announcement">
+                    <span class="announcement-title">公告一</span>
+                    <div class="announcement-content">传播系在最新评级</div>
+                    <span class="announcement-date">2024年06月20日</span>
+                </div>
+            </li>
+            <li>
+                <div class="announcement">
+                    <span class="announcement-title">公告二</span>
+                    <div class="announcement-content">学术研讨会圆满成功</div>
+                    <span class="announcement-date">2024年07月01日</span>
+                </div>
+            </li>
+            <li>
+                <div class="announcement">
+                    <span class="announcement-title">公告三</span>
+                    <div class="announcement-content">暑实项目报名开放</div>
+                    <span class="announcement-date">2024年07月10日</span>
+                </div>
+            </li>
+            <!-- 更多公告可以继续添加 -->
+        </ul>
+        <h2>近日新闻</h2>
+        <ul>
+            <li>
+                <div class="announcement">
+                    <span class="news-title">新闻一</span>
+                    <div class="news-content">传播系大广赛中获奖</div>
+                    <span class="news-date">2024年06月23日</span>
+                </div>
+            </li>
+            <li>
+                <div class="announcement">
+                    <span class="news-title">新闻二</span>
+                    <div class="news-content">王教授学术会议</div>
+                    <span class="news-date">2024年06月21日</span>
+                </div>
+            </li>
+            <li>
+                <div class="announcement">
+                    <span class="news-title">新闻三</span>
+                    <div class="news-content">新媒体实验室启用</div>
+                    <span class="news-date">2024年06月25日</span>
+                </div>
+            </li>
+            <!-- 可以继续添加更多新闻 -->
+            
+        </ul>
+        <!-- 其他内容 -->
+    </div>
+    <script>
+        // 图片数组，先显示初始图片，然后切换到这组图片
+        var imagePaths = [
+            ['images1/12.jpg', 'images1/23.png', 'images1/34.png'],
+            ['images1/99.jpg', 'images1/55.jpg', 'images1/89.jpg']
+        ];
+        var currentIndex = 0; // 当前图片组索引
+
+        // 切换到下一组图片
+        function nextImageSet() {
+            var images = document.querySelectorAll('.gallery-image');
+            // 切换到下一组图片
+            currentIndex = (currentIndex + 1) % imagePaths.length;
+            images.forEach(function(image, index) {
+                image.src = imagePaths[currentIndex][index];
+            // 重置图片大小以避免异常放大
+        image.style.width = '15%'; // 重置宽度为自动
+        image.style.height = '15%'; // 重置高度为自动
+    });
+        }
+       // 创建竖线
+       function createLines(container, numberOfLines) {
+            for (let i = 0; i < numberOfLines; i++) {
+                const line = document.createElement('div');
+                line.className = 'line';
+                container.appendChild(line);
+            }
+        }
+
+        // 获取竖线容器
+        const linesContainer = document.querySelector('.growing-lines');
+        createLines(linesContainer, 200); // 创建200条竖线
+
+        // 新增：重置所有竖线到基础高度的函数
+        function resetLines() {
+            const lines = document.querySelectorAll('.growing-lines .line');
+            lines.forEach(line => {
+                line.style.height = '7px'; // 恢复到基础高度
+            });
+        }
+
+        // 修改后的 mousemove 事件处理函数
+        document.addEventListener('mousemove', function(e) {
+            // 首先重置所有竖线
+            resetLines();
+            
+            const lines = document.querySelectorAll('.growing-lines .line');
+            lines.forEach(line => {
+                const rect = line.getBoundingClientRect();
+                const lineCenterX = rect.left + rect.width / 2;
+                const lineCenterY = rect.top + rect.height / 2;
+                const distX = Math.abs(e.clientX - lineCenterX);
+                const distY = Math.abs(e.clientY - lineCenterY);
+                const distance = Math.sqrt(distX * distX + distY * distY);
+                const maxGrowth = 50; // 最大增长高度
+                const growth = Math.max(0, (maxGrowth - distance)).toFixed(2);
+                
+                // 仅当鼠标靠近时增加高度
+                if (distance < maxGrowth) {
+                    line.style.height = `${growth}px`;
+                }
+            });
+        });
+    </script>
+</body>
+</html>
